@@ -1,26 +1,32 @@
-import pygame, math, sys, time, main
-from pygame.locals import *
+import pygame
 
+class MainMenu:
+    def __init__(self):
+        self.menu_font = pygame.font.Font(None, 36)
+        self.menu_items = ["Start Game", "Game Settings", "Graphic Settings"]
+        self.selected_item = 0
 
-pygame.init()
-def game_intro():
-    intro = True
-    while intro:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        screen.fill("white")
-        font = pygame.font.Font('freesansbold.ttf', 32)
+    def show_menu(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.selected_item = (self.selected_item - 1) % len(self.menu_items)
+                    elif event.key == pygame.K_DOWN:
+                        self.selected_item = (self.selected_item + 1) % len(self.menu_items)
+                    elif event.key == pygame.K_RETURN:
+                        if self.selected_item == 0:  # Start Game
+                            return "start"
+                        elif self.selected_item == 1:  # Game Settings
+                            return "game_settings"
+                        elif self.selected_item == 2:  # Graphic Settings
+                            return "graphic_settings"
 
-        intro_text = font.render("Cannibal Cars", True, (0, 0, 0))
-        controls_text = font.render("Arrow keys to move", True, (0, 0, 0))
-        controls_text2 = font.render("Space bar to transform", True, (0, 0, 0))
-        controls_text3 = font.render("Stop pressing any key to return to normal", True, (0, 0, 0))
-        screen.blit(intro_text, (300, 100))
-        screen.blit(controls_text, (20, 150))
-        screen.blit(controls_text2, (20, 200))
-        screen.blit(controls_text3, (20, 250))
-        button("Play", 300, 450, 100, 50, green, bright_green, "play")
-        pygame.display.update()
-        clock.tick(15)
+            screen.fill((0, 0, 0))  # Clear the screen
+            for i, item in enumerate(self.menu_items):
+                color = (255, 255, 255) if i == self.selected_item else (128, 128, 128)
+                text = self.menu_font.render(item, True, color)
+                text_rect = text.get_rect(center=(screen_width // 2, 100 + i * 50))
+                screen.blit(text, text_rect)
+
+            pygame.display.flip()
