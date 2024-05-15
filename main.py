@@ -1,4 +1,4 @@
-import pygame, math, sys, mainMenu, playerCar, opponentCar
+import pygame, math, sys, mainMenu, playerCar, opponentCar, Obstacle
 from pygame.locals import *
 
 def level1():
