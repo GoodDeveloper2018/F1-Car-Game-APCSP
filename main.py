@@ -1,8 +1,9 @@
 import pygame
-from player_car import PlayerCar
-from opponent_car import OpponentCar
-from obstacles import Obstacle
-from main_menu import MainMenu
+import sys
+from playerCar import PlayerCar
+from opponentCar import OpponentCar
+from obstacle import Obstacle
+from mainMenu import MainMenu
 
 # Initialize Pygame
 pygame.init()
@@ -45,20 +46,19 @@ class Game:
         if keys[pygame.K_s]:
             self.player_car.decelerate()
         if keys[pygame.K_a]:
-            # Move player car left
-            pass
+            self.player_car.move_left()
         if keys[pygame.K_d]:
-            # Move player car right
-            pass
+            self.player_car.move_right()
 
         # Update player car
         self.player_car.update()
         # Update opponent car
-        self.opponent_car.update(game_state)
+        self.opponent_car.update()
         # Check collisions with obstacles
         collisions = pygame.sprite.spritecollide(self.player_car, self.obstacles, False)
         if collisions:
             # Handle collision
+            pass
 
         screen.fill((0, 0, 0))
         # Draw player car
