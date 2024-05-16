@@ -1,7 +1,7 @@
 import pygame
 
 class PlayerCar(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, pos):
         super().__init__()
         self.image = pygame.Surface((20, 40))  # Example image size
         self.image.fill((255, 0, 0))  # Example color
@@ -10,6 +10,8 @@ class PlayerCar(pygame.sprite.Sprite):
         self.speed = 0  # Initial speed
         self.acceleration = 0.1  # Acceleration rate
         self.max_speed = 5  # Maximum speed
+        self.pos = pos
+        self.pos = pygame.get_pos(PlayerCar)
 
     def accelerate(self):
         if self.speed < self.max_speed:
