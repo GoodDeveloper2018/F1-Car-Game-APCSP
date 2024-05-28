@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+import game_state
 from nueral_network_model import NeuralNetwork
 
 class OpponentCar(pygame.sprite.Sprite):
