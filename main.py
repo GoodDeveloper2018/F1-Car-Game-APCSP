@@ -5,6 +5,7 @@ from playerCar import PlayerCar
 from opponentCar import OpponentCar
 from obstacle import Obstacle
 from mainMenu import MainMenu
+from gameTrack import Track
 
 # Initialize Pygame
 pygame.init()
@@ -19,19 +20,26 @@ pygame.display.set_caption("F1 Racing Game")
 # Game class
 class Game:
     def __init__(self):
+        self.track = Track(self.load_waypoints('spa_track.json'))
         self.running = True
         self.playing = False
         self.clock = pygame.time.Clock()
         self.player_car = PlayerCar(100, 300)  # Starting position
-        self.opponent_car = OpponentCar(700, 300, "path_to_model")  # Starting position and model path
+        self.opponent_car = OpponentCar(700, 300)  # Starting position
         self.obstacles = pygame.sprite.Group()
         self.main_menu = MainMenu()
+        self.track = Track(self.load_waypoints('spa_track.json'))  # Ensure waypoints are loaded properly
 
         # Create some obstacles
         for _ in range(10):
             x = random.randint(50, screen_width - 50)
             y = random.randint(50, screen_height - 50)
             self.obstacles.add(Obstacle(x, y, 20))
+
+    def load_waypoints(self, filename):
+        with open(filename) as f:
+            waypoints = json.load(f)
+        return waypoints
 
     def run(self):
         while self.running:
@@ -62,8 +70,7 @@ class Game:
             # Update player car
             self.player_car.update()
             # Update opponent car
-            game_state = self.get_game_state()
-            self.opponent_car.update(game_state)
+            self.opponent_car.update(self.player_car.rect.center, self.player_car.speed)
             # Check collisions with obstacles
             collisions = pygame.sprite.spritecollide(self.player_car, self.obstacles, False)
             if collisions:
@@ -71,6 +78,8 @@ class Game:
                 self.playing = False  # Stop the game on collision
 
             screen.fill((0, 0, 0))
+            # Draw track
+            self.track.draw(screen)
             # Draw player car
             screen.blit(self.player_car.image, self.player_car.rect)
             # Draw opponent car
@@ -86,17 +95,14 @@ class Game:
         player_pos = self.player_car.rect.center
         opponent_pos = self.opponent_car.rect.center
         obstacles_pos = [obstacle.rect.center for obstacle in self.obstacles]
-        track_state = self.track_state.rect.center
-        # Create a game state array
         game_state = {
             'player_pos': player_pos,
             'opponent_pos': opponent_pos,
             'obstacles_pos': obstacles_pos,
-            "track_state" : track_state
+            'track_state': self.track.waypoints
         }
 
         return game_state
-
 
 # Main function
 def main():
@@ -105,6 +111,6 @@ def main():
     pygame.quit()
     sys.exit()
 
-
 if __name__ == "__main__":
     main()
+
