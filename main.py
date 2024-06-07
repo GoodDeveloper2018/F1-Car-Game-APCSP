@@ -1,116 +1,63 @@
+# main.py
+
 import pygame
-import sys
-import random
 from playerCar import PlayerCar
 from opponentCar import OpponentCar
-from obstacle import Obstacle
+from gameTrack import GameTrack
 from mainMenu import MainMenu
-from gameTrack import Track
+import sys
 
-# Initialize Pygame
-pygame.init()
-
-# Define screen dimensions
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("F1 Racing Game")
-
-
-# Game class
 class Game:
     def __init__(self):
-        self.track = Track(self.load_waypoints('spa_track.json'))
-        self.running = True
-        self.playing = False
+        pygame.init()
+        self.screen = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption('Car Racing Game')
         self.clock = pygame.time.Clock()
-        self.player_car = PlayerCar(100, 300)  # Starting position
-        self.opponent_car = OpponentCar(700, 300)  # Starting position
-        self.obstacles = pygame.sprite.Group()
-        self.main_menu = MainMenu()
-        self.track = Track(self.load_waypoints('spa_track.json'))  # Ensure waypoints are loaded properly
 
-        # Create some obstacles
-        for _ in range(10):
-            x = random.randint(50, screen_width - 50)
-            y = random.randint(50, screen_height - 50)
-            self.obstacles.add(Obstacle(x, y, 20))
+        self.main_menu = MainMenu(self.screen, self.start_game)
+        self.player_car = PlayerCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
+        self.opponent_car = OpponentCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
+        self.game_track = GameTrack()
+        self.running = True
+        self.in_main_menu = False
 
-    def load_waypoints(self, filename):
-        with open(filename) as f:
-            waypoints = json.load(f)
-        return waypoints
+        self.background_color = (255, 255, 255)
+        self.brightness = 1
+
+    def start_game(self, background_color, brightness):
+        self.background_color = background_color
+        self.brightness = brightness
+        self.in_main_menu = False
 
     def run(self):
-        while self.running:
-            if self.playing:
-                self.play()
-            else:
-                choice = self.main_menu.show_menu()
-                if choice == "start":
-                    self.playing = True
-
-    def play(self):
-        while self.playing:
+        while True:
+            keys = pygame.key.get_pressed()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.playing = False
-                    self.running = False
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+                    self.in_main_menu = True
 
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_w]:
-                self.player_car.accelerate()
-            if keys[pygame.K_s]:
-                self.player_car.decelerate()
-            if keys[pygame.K_a]:
-                self.player_car.move_left()
-            if keys[pygame.K_d]:
-                self.player_car.move_right()
+                if self.in_main_menu:
+                    self.main_menu.handle_event(event)
+                else:
+                    self.player_car.handle_event(keys)
 
-            # Update player car
-            self.player_car.update()
-            # Update opponent car
-            self.opponent_car.update(self.player_car.rect.center, self.player_car.speed)
-            # Check collisions with obstacles
-            collisions = pygame.sprite.spritecollide(self.player_car, self.obstacles, False)
-            if collisions:
-                # Handle collision
-                self.playing = False  # Stop the game on collision
+            if self.in_main_menu:
+                self.main_menu.run()
+            else:
+                self.screen.fill(self.background_color)  # Background color
+                self.game_track.draw(self.screen)
+                self.player_car.draw(self.screen)
+                self.opponent_car.draw(self.screen)
 
-            screen.fill((0, 0, 0))
-            # Draw track
-            self.track.draw(screen)
-            # Draw player car
-            screen.blit(self.player_car.image, self.player_car.rect)
-            # Draw opponent car
-            screen.blit(self.opponent_car.image, self.opponent_car.rect)
-            # Draw obstacles
-            self.obstacles.draw(screen)
+                pygame.display.flip()
+                self.clock.tick(60)
 
-            pygame.display.flip()
-            self.clock.tick(60)
-
-    def get_game_state(self):
-        # Collect game state information
-        player_pos = self.player_car.rect.center
-        opponent_pos = self.opponent_car.rect.center
-        obstacles_pos = [obstacle.rect.center for obstacle in self.obstacles]
-        game_state = {
-            'player_pos': player_pos,
-            'opponent_pos': opponent_pos,
-            'obstacles_pos': obstacles_pos,
-            'track_state': self.track.waypoints
-        }
-
-        return game_state
-
-# Main function
 def main():
     game = Game()
     game.run()
-    pygame.quit()
-    sys.exit()
 
 if __name__ == "__main__":
     main()
-
