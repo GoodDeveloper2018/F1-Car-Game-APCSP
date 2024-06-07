@@ -1,37 +1,43 @@
+# playerCar.py
+
 import pygame
-import math
 
-class PlayerCar(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.original_image = pygame.Surface((20, 40))  # Example image size
-        self.original_image.fill((255, 0, 0))  # Example color
-        self.image = self.original_image.copy()
+class PlayerCar:
+    def __init__(self, image_path, scale_factor=0.1):
+        self.original_image = pygame.image.load(image_path)
+        self.image = pygame.transform.scale(self.original_image, (
+            int(self.original_image.get_width() * scale_factor),
+            int(self.original_image.get_height() * scale_factor)
+        ))
         self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.speed = 0  # Initial speed
-        self.acceleration = 0.1  # Acceleration rate
-        self.max_speed = 5  # Maximum speed
-        self.angle = 0  # Initial angle for rotation
+        self.rect.center = (400, 300)  # Starting position at the center of the screen
+        self.speed = 0
+        self.acceleration = 0.1
+        self.max_speed = 10
+        self.velocity = pygame.math.Vector2(0, 0)
 
-    def accelerate(self):
-        if self.speed < self.max_speed:
+    def handle_event(self, keys):
+        if keys[pygame.K_w]:
             self.speed += self.acceleration
-
-    def decelerate(self):
-        if self.speed > 0:
+            if self.speed > self.max_speed:
+                self.speed = self.max_speed
+        elif keys[pygame.K_s]:
             self.speed -= self.acceleration
+            if self.speed < -self.max_speed:
+                self.speed = -self.max_speed
+        else:
+            self.speed *= 0.98  # Friction effect
 
-    def move_left(self):
-        self.angle += 5  # Turn left
+        if keys[pygame.K_a]:
+            self.rect.x -= self.speed
+        if keys[pygame.K_d]:
+            self.rect.x += self.speed
 
-    def move_right(self):
-        self.angle -= 5  # Turn right
+        self.rect.y += self.speed
 
-    def update(self):
-        # Update the position based on speed and angle
-        radians = math.radians(self.angle)
-        self.rect.x += self.speed * math.sin(radians)
-        self.rect.y -= self.speed * math.cos(radians)
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.rect = self.image.get_rect(center=self.rect.center)
+    def draw(self, screen):
+        screen.blit(self.image, self.rect.topleft)
+
+    def reset_position(self):
+        self.rect.center = (400, 300)
+        self.speed = 0
