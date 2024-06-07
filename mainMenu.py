@@ -18,9 +18,9 @@ class MainMenu:
                         if self.selected_item == 0:  # Start Game
                             return "start"
                         elif self.selected_item == 1:  # Game Settings
-                            return "game_settings"
+                            return self.game_settings()
                         elif self.selected_item == 2:  # Graphic Settings
-                            return "graphic_settings"
+                            return self.graphic_settings()
 
             screen.fill((0, 0, 0))  # Clear the screen
             for i, item in enumerate(self.menu_items):
@@ -30,3 +30,11 @@ class MainMenu:
                 screen.blit(text, text_rect)
 
             pygame.display.flip()
+
+    def game_settings(self):
+        # Implement game settings logic
+        pass
+
+    def graphic_settings(self):
+        # Implement graphic settings logic
+        pass
