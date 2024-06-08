@@ -17,20 +17,20 @@ class PlayerCar:
         self.velocity = pygame.math.Vector2(0, 0)
 
     def handle_event(self, keys):
-        if keys[pygame.K_w]:
+        if keys[pygame.K_s]:
             self.speed += self.acceleration
             if self.speed > self.max_speed:
                 self.speed = self.max_speed
-        elif keys[pygame.K_s]:
+        elif keys[pygame.K_w]:
             self.speed -= self.acceleration
             if self.speed < -self.max_speed:
                 self.speed = -self.max_speed
         else:
             self.speed *= 0.98  # Friction effect
 
-        if keys[pygame.K_a]:
-            self.rect.x -= self.speed
         if keys[pygame.K_d]:
+            self.rect.x -= self.speed
+        if keys[pygame.K_a]:
             self.rect.x += self.speed
 
         self.rect.y += self.speed
