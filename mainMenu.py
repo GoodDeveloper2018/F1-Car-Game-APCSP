@@ -29,8 +29,8 @@ class MainMenu:
         self.brightness_handle = pygame.Rect(200, 305, 10, 30)
         self.handle_grabbed = False
 
-        self.save_button = pygame.Rect(100, 360, 100, 40)
-        self.apply_button = pygame.Rect(220, 360, 100, 40)
+        self.save_button = pygame.Rect(100, 350, 100, 40)
+        self.apply_button = pygame.Rect(220, 350, 100, 40)
 
     def draw_button(self, text, rect):
         pygame.draw.rect(self.screen, (0, 0, 0), rect, 2)
