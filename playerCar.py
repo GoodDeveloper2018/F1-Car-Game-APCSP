@@ -1,43 +1,62 @@
-# playerCar.py
 
 import pygame
+from playerCar import PlayerCar
+from opponentCar import OpponentCar
+from gameTrack import GameTrack
+from mainMenu import MainMenu
+import sys
 
-class PlayerCar:
-    def __init__(self, image_path, scale_factor=0.1):
-        self.original_image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.original_image, (
-            int(self.original_image.get_width() * scale_factor),
-            int(self.original_image.get_height() * scale_factor)
-        ))
-        self.rect = self.image.get_rect()
-        self.rect.center = (400, 300)  # Starting position at the center of the screen
-        self.speed = 0
-        self.acceleration = 0.1
-        self.max_speed = 10
-        self.velocity = pygame.math.Vector2(0, 0)
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((800, 600))
+        pygame.display.set_caption('Car Racing Game')
+        self.clock = pygame.time.Clock()
 
-    def handle_event(self, keys):
-        if keys[pygame.K_s]:
-            self.speed += self.acceleration
-            if self.speed > self.max_speed:
-                self.speed = self.max_speed
-        elif keys[pygame.K_w]:
-            self.speed -= self.acceleration
-            if self.speed < -self.max_speed:
-                self.speed = -self.max_speed
-        else:
-            self.speed *= 0.98  # Friction effect
+        self.main_menu = MainMenu(self.screen, self.start_game)
+        self.player_car = PlayerCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
+        self.opponent_car = OpponentCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
+        self.game_track = GameTrack()
+        self.running = True
+        self.in_main_menu = False
 
-        if keys[pygame.K_a]:
-            self.rect.x -= self.speed
-        if keys[pygame.K_d]:
-            self.rect.x += self.speed
+        self.background_color = (255, 255, 255)
+        self.brightness = 1
 
-        self.rect.y += self.speed
+    def start_game(self, background_color, brightness):
+        self.background_color = background_color
+        self.brightness = brightness
+        self.in_main_menu = False
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rect.topleft)
+    def run(self):
+        while True:
+            keys = pygame.key.get_pressed()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+                    self.in_main_menu = True
 
-    def reset_position(self):
-        self.rect.center = (400, 300)
-        self.speed = 0
+                if self.in_main_menu:
+                    self.main_menu.handle_event(event)
+                else:
+                    self.player_car.handle_event(keys)
+
+            if self.in_main_menu:
+                self.main_menu.run()
+            else:
+                self.screen.fill(self.background_color)  # Background color
+                self.game_track.draw(self.screen)
+                self.player_car.draw(self.screen)
+                self.opponent_car.draw(self.screen)
+
+                pygame.display.flip()
+                self.clock.tick(60)
+
+def main():
+    game = Game()
+    game.run()
+
+if __name__ == "__main__":
+    main()
