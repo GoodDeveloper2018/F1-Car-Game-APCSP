@@ -28,9 +28,9 @@ class PlayerCar:
         else:
             self.speed *= 0.98  # Friction effect
 
-        if keys[pygame.K_d]:
-            self.rect.x -= self.speed
         if keys[pygame.K_a]:
+            self.rect.x -= self.speed
+        if keys[pygame.K_d]:
             self.rect.x += self.speed
 
         self.rect.y += self.speed
