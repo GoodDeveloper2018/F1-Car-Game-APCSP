@@ -25,12 +25,12 @@ class MainMenu:
         self.graphics_visible = False
         self.color_options = ["White", "Green", "Blue", "Black"]
         self.color_rects = [pygame.Rect(100, 150 + i * 40, 100, 30) for i in range(len(self.color_options))]
-        self.brightness_slider = pygame.Rect(100, 270, 200, 20)
-        self.brightness_handle = pygame.Rect(200, 265, 10, 30)
+        self.brightness_slider = pygame.Rect(100, 310, 200, 20)
+        self.brightness_handle = pygame.Rect(200, 305, 10, 30)
         self.handle_grabbed = False
 
-        self.save_button = pygame.Rect(100, 320, 100, 40)
-        self.apply_button = pygame.Rect(220, 320, 100, 40)
+        self.save_button = pygame.Rect(100, 360, 100, 40)
+        self.apply_button = pygame.Rect(220, 360, 100, 40)
 
     def draw_button(self, text, rect):
         pygame.draw.rect(self.screen, (0, 0, 0), rect, 2)
