@@ -38,3 +38,8 @@ class OpponentCar:
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
+
+    def check_collision(self, checkpoint):
+        car_rect = pygame.Rect(self.rect.left, self.rect.top, self.rect.width, self.rect.height)
+        checkpoint_rect = pygame.Rect(checkpoint[0], checkpoint[1], 10, 10)  # 10x10 is the checkpoint size
+        return car_rect.colliderect(checkpoint_rect)
