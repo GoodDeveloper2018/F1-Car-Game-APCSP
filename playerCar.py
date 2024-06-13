@@ -1,20 +1,22 @@
-# playerCar.py
-
 import pygame
+import math
 
 class PlayerCar:
-    def __init__(self, image_path, scale_factor=0.1):
+    def __init__(self, image_path, scale_factor=0.05):
         self.original_image = pygame.image.load(image_path)
-        self.image = pygame.transform.scale(self.original_image, (
+        self.scaled_image = pygame.transform.scale(self.original_image, (
             int(self.original_image.get_width() * scale_factor),
             int(self.original_image.get_height() * scale_factor)
         ))
+        self.image = self.scaled_image.copy()
         self.rect = self.image.get_rect()
-        self.rect.center = (400, 300)  # Starting position at the center of the screen
+        self.start_position = (175, 58)  # Starting position at the beginning of the track
+        self.rect.center = self.start_position
         self.speed = 0
         self.acceleration = 0.1
         self.max_speed = 10
         self.velocity = pygame.math.Vector2(0, 0)
+        self.angle = 0
 
     def handle_event(self, keys):
         if keys[pygame.K_s]:
@@ -29,15 +31,23 @@ class PlayerCar:
             self.speed *= 0.98  # Friction effect
 
         if keys[pygame.K_d]:
-            self.rect.x -= self.speed
+            self.angle -= 5
         if keys[pygame.K_a]:
-            self.rect.x += self.speed
+            self.angle += 5
 
-        self.rect.y += self.speed
+    def update(self):
+        self.velocity.x = self.speed * math.cos(math.radians(self.angle))
+        self.velocity.y = self.speed * math.sin(math.radians(self.angle))
+        self.rect.centerx += self.velocity.x
+        self.rect.centery += self.velocity.y
+
+        self.image = pygame.transform.rotate(self.scaled_image, -self.angle)
+        self.rect = self.image.get_rect(center=self.rect.center)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
 
     def reset_position(self):
-        self.rect.center = (400, 300)
+        self.rect.center = self.start_position
         self.speed = 0
+        self.angle = 0
