@@ -1,5 +1,3 @@
-# main.py
-
 import pygame
 from playerCar import PlayerCar
 from opponentCar import OpponentCar
@@ -13,11 +11,13 @@ class Game:
         self.screen = pygame.display.set_mode((800, 600))
         pygame.display.set_caption('Car Racing Game')
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.SysFont(None, 24)
 
         self.main_menu = MainMenu(self.screen, self.start_game)
-        self.player_car = PlayerCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
-        self.opponent_car = OpponentCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.1)
         self.game_track = GameTrack()
+        track_points = self.game_track.get_track_points()
+        self.player_car = PlayerCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', scale_factor=0.05)
+        self.opponent_car = OpponentCar('flat_750x_075_f-pad_750x1000_f8f8f8-removebg-preview.png', (track_points[0]["x"], track_points[0]["y"]), track_points, scale_factor=0.05)
         self.running = True
         self.in_main_menu = False
 
@@ -49,8 +49,20 @@ class Game:
             else:
                 self.screen.fill(self.background_color)  # Background color
                 self.game_track.draw(self.screen)
+                self.player_car.update()
+                self.opponent_car.update(self.player_car)
+
+                # Check for collision with the track border
+                if self.game_track.check_collision(self.player_car.rect):
+                    self.player_car.reset_position()
+
                 self.player_car.draw(self.screen)
                 self.opponent_car.draw(self.screen)
+
+                # Get mouse position and display coordinates
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                coord_text = self.font.render(f"({mouse_x}, {mouse_y})", True, (0, 0, 0))
+                self.screen.blit(coord_text, (mouse_x + 10, mouse_y + 10))
 
                 pygame.display.flip()
                 self.clock.tick(60)
